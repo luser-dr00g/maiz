@@ -1,0 +1,100 @@
+; The 'maiz' 2D pattern language 
+; comprises a set of operators which coordinate the
+; movement of the "pointer" or "read head" of the
+; pattern-matching machine.
+
+; Each connective has a 4-cell view of the world.
+; ..
+; ..
+
+; And from the starting point identified here as s,
+; s.
+; ..
+
+; each connective selects various other cells from
+; which to spawn a recursive invocation of the 
+; machine.
+
+; The target(s) of each connective are identified here by
+; their order in the syntax. The number of targets is
+; the connective's arity, and that many more connectives
+; must immediately follow in that order in the source.
+; a   i   j   r   c   n   m   z
+; s1  s.  s.  s1  s1  s.  s1  s.
+; ..  1.  .1  2.  .2  21  32  ..  where z is the "zero" target
+;                                 which has no further branches.
+
+; To build a machine, each connective must be paired with 
+; a character-class designator for which we'll use the natural
+; numbers.
+
+; Source-lines beginning with a digit are considered
+; to define the character-class associated with the first
+; number that can be parsed. If the number is followed by
+; a whitespace character, exactly one whitespace character
+; will be discarded, but the remaining characters of the
+; line constitute the definition of the class.
+
+0 #
+1 _
+
+; Source-lines beginning with a letter construct a
+; pattern-matching network, a "machine".
+; Whitespace within the machine definition is completely
+; irrelevant. The only significant elements are the 
+; numbers and connective-letters.
+
+; Since connectives are paired with digits, it 
+; has been found convenient to keep them juxtaposed.
+
+; This machine with the character-classes defined above
+; matches a chessboard design.
+r0 a1 z0
+r1 a0 z1
+a0 a1 z0
+
+; It can also be written so as to emphasize the nesting
+; of control, the "tree-structure" of the connectives.
+r0
+    a1
+        z0
+    r1
+        a0
+            z1
+        a1
+            z0
+
+; Additional "meta-connectives" apply closures upon 
+; portions of the tree.
+; q         x
+; regex ?   regex *
+
+; So, the above machine could be augmented to match
+; an optional extra row, by applying q to the possible
+; row.
+ r0 a1 z0
+ r1 a0 z1
+ r0 a1 z0
+qa1 a0 z1
+
+; Or, it could be augmented to match an optional extra
+; column.
+ r0 a1 a0 qi1 i0 z1
+ r1 a0 z1
+ a0 a1 z0
+
+; The unsolved difficulty is coordinating the two to also
+; match an extra bottom-corner if both an extra column and an
+; extra row are discovered. One could put an optional 
+; diagonal at the corner, but still, it needs something else.
+ r0 a1 a0 qi1 i0 z1
+ r1 a0 z1
+ r0 a1 j0 qz0
+qa1 a0 z1
+
+; Incidentally, this syntax is called *fixed-arity,
+; unparenthesized, forward-Polish.*
+
+; Source-lines beginning with a semicolon are considered
+; comments and discarded by the interpreter.
+
