@@ -17,12 +17,20 @@
 
 ; The target(s) of each connective are identified here by
 ; their order in the syntax. The number of targets is
-; the connective's arity, and that many more connectives
+; the connective's arity, and that number of connectives
 ; must immediately follow in that order in the source.
 ; a   i   j   r   c   n   m   z
 ; s1  s.  s.  s1  s1  s.  s1  s.
 ; ..  1.  .1  2.  .2  21  32  ..  where z is the "zero" target
 ;                                 which has no further branches.
+
+; So 'a' simply moves to the right.
+;    'i' moves down.
+;    'j' moves diagonally.
+;    'r' branches right then down.
+;    'c' branches right then diagonally.
+;    'n' branches diagonally then down.
+;    'm' branches right then diagonally then down.
 
 ; To build a machine, each connective must be paired with 
 ; a character-class designator for which we'll use the natural
@@ -65,7 +73,8 @@ r0
             z0
 
 ; Additional "meta-connectives" apply closures upon 
-; portions of the tree.
+; portions of the tree. These are not paired with a 
+; character class designator.
 ; q         x
 ; regex ?   regex *
 
@@ -83,7 +92,7 @@ qa1 a0 z1
  r1 a0 z1
  a0 a1 z0
 
-; The unsolved difficulty is coordinating the two to also
+; One unsolved difficulty is coordinating the two to also
 ; match an extra bottom-corner if both an extra column and an
 ; extra row are discovered. One could put an optional 
 ; diagonal at the corner, but still, it needs something else.
@@ -91,6 +100,37 @@ qa1 a0 z1
  r1 a0 z1
  r0 a1 j0 qz0
 qa1 a0 z1
+
+; Another idea is to use negative numbers to perform a 
+; capture. But the straightforward implementation of this
+; would simply overwrite the existing class (so it'd be
+; single-use, I fear).
+
+; Another idea is to use uppercase letters as sort of "macros".
+; So, for the extending chessboard,
+
+A qr1 D
+   i0
+   z1
+
+D qr0 A
+   i1
+   z0
+
+B qz0
+
+C qr1 a0 z1 E
+E qr0 a1 z0 C
+ 
+r0 a1 a0 A
+r1 a0 z1
+r0 a1 j0 B
+C
+
+; So now another tricky part arises. If A or D is matched,
+; then C and E need to be lengthed accordingly.
+; We'll need the ability to patch or augment a defined
+; machine. 
 
 ; Incidentally, this syntax is called *fixed-arity,
 ; unparenthesized, forward-Polish.*
