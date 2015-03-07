@@ -63,14 +63,17 @@ a0 a1 z0
 
 ; It can also be written so as to emphasize the nesting
 ; of control, the "tree-structure" of the connectives.
-r0
-    a1
-        z0
-    r1
-        a0
-            z1
+; This machine matches the inverse chessboard design,
+; with the same tree-shape as the previous.
+r1
+    a0
+        z1
+    r0
         a1
             z0
+        a1
+            a0
+                z1
 
 ; Additional "meta-connectives" apply closures upon 
 ; portions of the tree. These are not paired with a 
@@ -128,12 +131,91 @@ r0 a1 j0 B
 C
 
 ; So now another tricky part arises. If A or D is matched,
-; then C and E need to be lengthed accordingly.
+; then C and E need to be lengthed accordingly. 
+; Or, some means of expanding B into a square, which seems
+; to reduce to the same thing.
 ; We'll need the ability to patch or augment a defined
 ; machine. 
 
+; Also the references to D in A and to E in C will need to 
+; be back-patched after their definitions or looked-up
+; dynamically (just store symbolic links).
+
+; The machines are built with pointers, so the data structure
+; should naturally handle recursively defined machines.
+; The trick will be executing them reasonably, taking advantage
+; of the optional connectives for breaking the recursion.
+
+; But, if the machines have recursive links, then we can't 
+; reuse the machine structure as the return structure for
+; returning the matched block of chars. The match data will
+; need a different structure, guided by the shape of the 
+; machine, but with unrolled links, ie. self-contained. 
+
 ; Incidentally, this syntax is called *fixed-arity,
 ; unparenthesized, forward-Polish.*
+
+; We seem to need a separate imperative language that can
+; perform arbitrary computations.
+
+; Operations on a tree are effected by traversing its list
+; representation. So, considering the same example from
+; above,
+
+; The q operators seem to be a natural place to add a
+; code fragment, since they're not paired with a char-class.
+; At first blush, the punctuation symbols are ripe for
+; exploitation. And how about reverse-polish this time:
+; maximum-imperative.
+
+; So, the q in A, if it matches, needs to add an element
+; to each of C and E. And D needs to do the same.
+; C is a tree:
+
+C q
+    r1
+        a0
+            z1
+        E
+
+; which needs to be changed to:
+
+C q
+    r1
+        a0
+            a1
+                z0
+        E
+
+; If we start at the q node, we need to move 
+; "right" to the first child r, right again to the
+; second child a0, right again to the z1, and then
+; replace z1 with a1z0.
+
+; First command is the macro letter which loads the machine.
+; Then, right right right, new node(s), set. Bingo!
+
+A q{C>>>a1z0=}r1 D
+   i0
+   z1
+
+D q{E>>>a0z1=}r0 A
+   i1
+   z0
+
+; mach  >  mach     move to the "right" node from this node
+; mach node  =  -   replace the machine node with new node(s)
+
+C qr1 a0 z1 E
+E qr0 a1 z0 C
+
+r0 a1 a0 A
+r1 a0 z1
+r0 a1 j0 B
+C
+
+B qz0
+
 
 ; Source-lines beginning with a semicolon are considered
 ; comments and discarded by the interpreter.
