@@ -203,8 +203,26 @@ D q{E>>>a0z1=}r0 A
    i1
    z0
 
+; Imperative code is bracketed by curly braces {} and can be 
+; interjected between any connective and its paired char-class
+; (or, with q and x which have no char-class, simply before
+; any arguments).
+
 ; mach  >  mach     move to the "right" node from this node
+; mach  \  mach     move to the diagonal node from this node
+; mach  |  mach     move to the down node from this node
 ; mach node  =  -   replace the machine node with new node(s)
+; mach num   =  -   replace the char-class in the machine node
+; mach  @  num      return the char-class from the machine node
+; any  ,  any any   dup
+; any  .  -         pop
+; mach  $  num      return the arity of the current node (delta::dollar)
+; mach num  ^       move to the link specified by num
+;                arithmetic
+;        augend addend  +  sum
+; diminuend subtrahend  -  difference
+;    multiplier scalar  *  product
+;     dividend divisor  /  quotient
 
 C qr1 a0 z1 E
 E qr0 a1 z0 C
