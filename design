@@ -32,6 +32,44 @@
 ;    'n' branches diagonally then down.
 ;    'm' branches right then diagonally then down.
 
+; The identifiers for these connectives have been selected
+; for their visual significance in identifying the branches
+;
+;                                           --->  aa
+;   i  |              j                             a
+;   i  |               j  .                      aaaa
+;   i  |                j  .                     a  a
+;   i  V                 j  Q                     aa a -->
+;
+; i goes down    j is like an i with a slant   a goes right
+;                                          (after a little twirl*)
+; *a was selected more because it is a "short" vowel sound,
+; the "shwa" of IPN, a little hop. It is the least "visually 
+; significant" of the bunch.
+
+;                                          --->
+;  rrrrr ->          nnnnn                cccc
+;  r                 n    n .            c   .
+;  r |               n |  n  .           c    .
+;  r |               n |  n   Q           cccc Q
+;    V                 V
+;
+; r branches right   n branches diag   c branches right
+; and down           and down                and diag
+
+; 
+; mmmm mmmm
+; m   m    m
+; m    m    m
+; m     m
+;
+; m has three branches, right
+;            diag
+; and down
+
+; All branching connectives follow their branches in 
+; a counter-clockwise order starting from the right.
+
 ; To build a machine, each connective must be paired with 
 ; a character-class designator for which we'll use the natural
 ; numbers.
@@ -223,6 +261,7 @@ D q{E>>>a0z1=}r0 A
 ; diminuend subtrahend  -  difference
 ;    multiplier scalar  *  product
 ;     dividend divisor  /  quotient
+;              num num  ?  compare quanties =>  -1 | 0 | +1
 
 C qr1 a0 z1 E
 E qr0 a1 z0 C
